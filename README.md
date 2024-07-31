@@ -1,6 +1,6 @@
 # Maverick
 
-Maverick is a multi-platform desktop application that can place bets automatically on multiple online betting platforms using your web browser. Bets are placed in an average of 5 seconds, making it ideal for live matches and real-time betting.
+Maverick is a multi-platform desktop application that can place bets automatically on multiple online betting platforms using the Chrome browser.
 
 ## Supported platforms
 
@@ -37,52 +37,6 @@ Maverick is a multi-platform desktop application that can place bets automatical
 - Detailed error reporting
 - Settings accessible through TOML file
 
-
-## How to use it?
-
-Maverick is available upon request. Send an email to abel `(at)` jupiter `(dash)` labs `(dot)` tech.
-
-Plans are tailored to your use case, so make sure to include what you need in your email.
-
-You should be up and running in around 2-3 days since your first email.
-
-<details>
-  <summary>I need more markets, would you add them?</summary>
-  Yes, no problem, should be quick.
-</details>
-
-<details>
-<summary>What about other betting platforms?</summary>
-I'm happy to add other betting platforms upon request. Might incur in extra cost.
-</details>
-
-<details>
-<summary>Can it place bets on multiple platforms at the same time?</summary>
-Yes indeed.
-</details>
-
-<details>
-<summary>Can it use a Telegram group as feed for its tips?</summary>
-Absolutely. There's an open source extension for Maverick available which you can customize for your particular needs and includes Telegram.
-</details>
-
-<details>
-<summary>Can I run it in my own computer at home or do I need a server?</summary>
-You can use both, but at home is always easier.
-</details>
-
-<details>
-<summary>I need XYZ, can you do it for me?</summary>
-Maybe, shoot me an email, let's chat!
-</details>
-
-<details>
-<summary>Is the full source code available for sale?</summary>
-Sure, everyone has a price.
-</details>
-
-
-----
 
 
 ## Configuration
@@ -142,6 +96,7 @@ host = "www.bet365.es"
 username = "theBetGod"
 password = "iLoveMe$$i!"
 language = "es"
+features = []
 ```
 
 | Property | Description                              |
@@ -150,6 +105,7 @@ language = "es"
 | username | The username of the account used to bet  |
 | password | The account password (in plain text)     |
 | language | The language of the account used to bet  |
+| features | Additional features to be enabled        |
 
 
 ## Running Mavierick
@@ -196,6 +152,7 @@ SessionStart will effectively start a new session. This means:
 PlaceBet will attempt to place a bet in the given match. The main parameters here are:
 
 - `id`: A UUID v4 that will uniquely identify this bet request.
+- `host`: The root domain for the betting platform (platform `host` value from `Config.toml`)
 - `match`: The details to identify the live match.
 - `bet`: The actual market and participant we're betting on.
 - `odds`: The odds we are looking for.
@@ -224,7 +181,7 @@ There's currently two ways of specifying a match:
 
 For every supported market, there are multiple ways of specifying the participant:
 
-#### Result
+#### Result - "Resultado Final"
 
 ##### Using participant index:
 ```json
@@ -244,7 +201,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Double Chance
+#### Double Chance - "Doble Oportunidad"
 
 ##### Using participant index:
 ```json
@@ -264,7 +221,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Draw No Bet
+#### Draw No Bet - "Empate - Apuesta no válida"
 
 ##### Using participant index:
 ```json
@@ -284,7 +241,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Goal Line
+#### Goal Line - "Línea de gol"
 
 ##### Over:
 ```json
@@ -292,7 +249,7 @@ For every supported market, there are multiple ways of specifying the participan
   "GoalLine":{
     "score": [1,0],
     "goals":{
-      "Over": "1.5"
+      "Over": [1.5]
     }
   }
 }
@@ -304,13 +261,13 @@ For every supported market, there are multiple ways of specifying the participan
   "GoalLine":{
     "score": [0,0],
     "goals":{
-      "Under": "0.5,1.0"
+      "Under": [0.5,1.0]
     }
   }
 }
 ```
 
-#### Asian Handicap
+#### Asian Handicap - "Hándicap asiático"
 
 ##### Using participant index and single hcp:
 ```json
@@ -338,13 +295,25 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Goals
+##### Catching fast-changing handicaps
+
+You can specify a tolerance factor for fast-changing handicaps. In the following example, all line values have a ±0.25 tolerance factor, which you can adapt to your needs.
+
+```json
+"line":[[3.5],0.25]
+```
+
+```json
+"line":[[0.0, 0.5],0.25]
+```
+
+#### Goals - "Goles"
 
 ##### Over:
 ```json
 {
   "Goals":{
-    "Over": "1.5"
+    "Over": 1.5
   }
 }
 ```
@@ -353,7 +322,7 @@ For every supported market, there are multiple ways of specifying the participan
 ```json
 {
   "Goals":{
-    "Under": "4.5"
+    "Under": 4.5
   }
 }
 ```
@@ -361,20 +330,22 @@ For every supported market, there are multiple ways of specifying the participan
 #### Full Example: A complete bet request
 ```json
 {
-  "PlaceBet":{
-    "id": "60f293c2-3ce1-49fb-a309-1c75520fc1d2",
-    "match":{
-      "Url": "https://www.bet365.es/#/IP/EV15970168472C1"
+  "PlaceBet": {
+    "host": "www.bet365.es",
+    "id": "a7b84b39-eea7-470b-a598-f928b0f67b0a",
+    "match": {
+      "Url": "https://www.bet365.es/#/IP/EV151069435432C1"
     },
-    "bet":{
-      "Result":{
-        "Index": 2
+    "bet": {
+      "Goals": {
+        "Over": 1.5
       }
     },
-    "odds":{
-      "base": 1.4
+    "odds": {
+      "base": 1.6,
     },
-    "stake": 0.05
+    "stake": 0.05,
+    "tf": "FirstHalf"
   }
 }
 ```
@@ -452,44 +423,48 @@ Here's a complete example of what it might look like:
 
 ```json
 {
-  "id":"e3df861b-140f-43ee-bb2d-f95484a8659e",
-  "url":"https://www.bet365.es/#/IP/EV15983185942C1",
+  "id":"9b6aa621-e23f-4063-a1c7-f5144e954cd3",
+  "host":"www.bet365.es",
+  "match":{
+    "Url":"https://www.bet365.es/#/IP/EV151069422752C1"
+  },
   "bet":{
-    "AsianHcp":{
-      "team":{
-        "Index":0
-      },
-      "score":[0,0],
-      "line":[0.0,-0.5]
+    "Goals":{
+      "Under":5.5
     }
   },
   "odds":{
-    "base":3.0,
+    "base":1.33,
     "tolerance":0.1
   },
-  "tf":null,
+  "tf":"FullTime",
   "stake":0.05,
-  "amt":4.89,
+  "amt":47,
   "hist":[
     {
-      "timestamp":1702985124368,
+      "timestamp":1722338306681,
       "status":"Received"
     },
     {
-      "timestamp":1702985129661,
+      "timestamp":1722338308873,
       "status":"Ready"
     },
     {
-      "timestamp":1702985129669,
+      "timestamp":1722338313351,
+      "status":"QRAuthRequested"
+    },
+    {
+      "timestamp":1722338324490,
       "status":{
-        "Error":{
-          "OddsChanged":2.075
+        "Placed":{
+          "ref":"BF7709201861A",
+          "amt":47,
+          "odds":1.33,
+          "acct_balance":940.75
         }
       }
     }
-  ],
-  "min_cashout":0.0,
-  "match_info":null
+  ]
 }
 ```
 
@@ -513,7 +488,19 @@ The following is a comprehensive list of all errors that can occur while executi
 | BelowMinCashout(f32)        | Bet return is below min cashout % threshold                |
 | Timeout(String)             | Took to long to perform a task                             |
 | BetMalformed(String)        | An error in the bet request's betting amount               |
-| AuthQRCodeRequested         | Platform requested QR authentication by a user             |
+| AuthQRCodeRequested(String) | Platform requested QR authentication by a user             |
+| QRSolverService(String)     | Errors originated from the QR Solver service               |
 | PlatformErrorMsg(String)    | Platform error message appeared when placing a bet         |
 | Other(String)               | Other errors (includes details as a String)                |
 | Unknown                     | Unknown error                                              |
+
+
+## Runtime requirements
+
+Maverick is expected to run on a dedicated environment. It's not meant to be used in hostile environments nor anywhere where a human is interfering with its operation.
+
+- Chrome needs to be in the main display of the computer running Maverick.
+- Chrome must remain in foreground at all times.
+- Chrome must be exclusively used by Maverick.
+- Betting platforms have been manually granted all the permissions they require.
+- Betting accounts used have been manually authorized by a human.
