@@ -1,6 +1,6 @@
 # Maverick
 
-Maverick is a multi-platform desktop application that can place bets automatically on multiple online betting platforms using the Chrome browser.
+Maverick is a multi-platform desktop application that can place bets automatically on multiple online betting platforms using your web browser. Bets are placed in an average of 5 seconds, making it ideal for live matches and real-time betting.
 
 ## Supported platforms
 
@@ -26,6 +26,7 @@ Maverick is a multi-platform desktop application that can place bets automatical
     - Input quantity failure
     - Click or selection failure
   - Authentication QR code detection
+  - Authentication QR code solving
 
 - Hands-free bet closing for active bets
   - Auto-retry on close suspended
@@ -37,6 +38,54 @@ Maverick is a multi-platform desktop application that can place bets automatical
 - Detailed error reporting
 - Settings accessible through TOML file
 
+
+## How to use it?
+
+Maverick is available upon request. Send an email to abel `(at)` jupiter `(dash)` labs `(dot)` tech.
+
+Plans are tailored to your use case, so make sure to include what you need in your email.
+
+You should be up and running in around 2-3 days since your first email.
+
+Although we provide [an example](https://github.com/t00ts/maverick-server), basic coding experience is recommended.
+
+<details>
+  <summary>I need more markets, would you add them?</summary>
+  Yes, no problem, should be quick.
+</details>
+
+<details>
+<summary>What about other betting platforms?</summary>
+I'm happy to add other betting platforms upon request. Might incur in extra cost.
+</details>
+
+<details>
+<summary>Can it place bets on multiple platforms at the same time?</summary>
+Yes indeed.
+</details>
+
+<details>
+<summary>Can it use a Telegram group as feed for its tips?</summary>
+Absolutely. There's an open source extension for Maverick available which you can customize for your particular needs and includes Telegram.
+</details>
+
+<details>
+<summary>Can I run it in my own computer at home or do I need a server?</summary>
+You can use both, but at home is always easier.
+</details>
+
+<details>
+<summary>I need XYZ, can you do it for me?</summary>
+Maybe, shoot me an email, let's chat!
+</details>
+
+<details>
+<summary>Is the full source code available for sale?</summary>
+Sure, everyone has a price.
+</details>
+
+
+----
 
 
 ## Configuration
@@ -96,7 +145,6 @@ host = "www.bet365.es"
 username = "theBetGod"
 password = "iLoveMe$$i!"
 language = "es"
-features = []
 ```
 
 | Property | Description                              |
@@ -131,7 +179,7 @@ Maverick supports 3 commands from the upstream:
 | Command      | Description                           |
 | ------------ | ------------------------------------- |
 | SessionStart | Starts a new session.                 |
-| PlaceBet     | Attempts to place a bet               |
+| PlaceBet     | Attempts to place a bet               |
 | CloseBet     | Attempts to close an open/active bet  |
 
 
@@ -181,7 +229,7 @@ There's currently two ways of specifying a match:
 
 For every supported market, there are multiple ways of specifying the participant:
 
-#### Result - "Resultado Final"
+#### Result
 
 ##### Using participant index:
 ```json
@@ -201,7 +249,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Double Chance - "Doble Oportunidad"
+#### Double Chance
 
 ##### Using participant index:
 ```json
@@ -221,7 +269,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Draw No Bet - "Empate - Apuesta no válida"
+#### Draw No Bet
 
 ##### Using participant index:
 ```json
@@ -241,7 +289,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Goal Line - "Línea de gol"
+#### Goal Line
 
 ##### Over:
 ```json
@@ -267,7 +315,7 @@ For every supported market, there are multiple ways of specifying the participan
 }
 ```
 
-#### Asian Handicap - "Hándicap asiático"
+#### Asian Handicap
 
 ##### Using participant index and single hcp:
 ```json
@@ -307,7 +355,7 @@ You can specify a tolerance factor for fast-changing handicaps. In the following
 "line":[[0.0, 0.5],0.25]
 ```
 
-#### Goals - "Goles"
+#### Goals
 
 ##### Over:
 ```json
@@ -330,14 +378,14 @@ You can specify a tolerance factor for fast-changing handicaps. In the following
 #### Full Example: A complete bet request
 ```json
 {
-  "PlaceBet": {
+  "PlaceBet":{
+    "id": "60f293c2-3ce1-49fb-a309-1c75520fc1d2",
     "host": "www.bet365.es",
-    "id": "a7b84b39-eea7-470b-a598-f928b0f67b0a",
-    "match": {
-      "Url": "https://www.bet365.es/#/IP/EV151069435432C1"
+    "match":{
+      "Url": "https://www.bet365.es/#/IP/EV15970168472C1"
     },
-    "bet": {
-      "Goals": {
+    "bet":{
+      "Goals":{
         "Over": 1.5
       }
     },
@@ -484,7 +532,7 @@ The following is a comprehensive list of all errors that can occur while executi
 | NoOpenBets                  | No bets are open for the specified match                   |
 | BetNotFound                 | The requested bet (to close) was not found                 |
 | CloseSuspended              | Closing was suspended when attempting to close this bet    |
-| CloseNotAvailable           | Closing is not available for the requested bet             |
+| CloseNotAvailable           | Closing is not available for the requested bet             |
 | BelowMinCashout(f32)        | Bet return is below min cashout % threshold                |
 | Timeout(String)             | Took to long to perform a task                             |
 | BetMalformed(String)        | An error in the bet request's betting amount               |
