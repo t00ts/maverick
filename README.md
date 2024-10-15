@@ -1,53 +1,20 @@
 # Maverick
 
-Maverick is a multi-platform desktop application that can place bets automatically on multiple online betting platforms using your web browser. Bets are placed in an average of 5 seconds, making it ideal for live matches and real-time betting.
+Maverick is an app that can place bets automatically on Bet365 leveraging your existing web browser. It runs on Windows and macOS (Linux coming soon) and simulates human behaviour to avoid being detected. Bets are placed in an average of 5 seconds, making it ideal for live matches and real-time betting.
 
-## Supported platforms
+Maverick itself is just your executor arm for unattended betting. You can think of it as an API for Bet365. Maverick does not include a betting strategy nor will perform any bets by itself. It's up to the user to send instructions to Maverick for them to be executed.
 
-- [X] Bet365
+Instructions are sent via Websockets. The user is responsible for spinning up a Websocket server, through which it can send and receive commands from Maverick. An example server that is commonly used to start off can be found [here](https://github.com/t00ts/maverick-server). You can connect as many Maverick clients to your server as you want.
 
-
-## Supported markets
-
-- [X] Result
-- [X] Double chance
-- [X] Draw no bet
-- [X] Goal line
-- [X] Goals
-- [X] Asian handicap
-
-## Features
-
-- Hands-free bet placement on live matches
-  - Error detection on match, market, and bet levels
-  - Auto-retry capabilities:
-    - Participant suspended
-    - Accept odds changed
-    - Input quantity failure
-    - Click or selection failure
-  - Authentication QR code detection
-  - Authentication QR code solving
-
-- Hands-free bet closing for active bets
-  - Auto-retry on close suspended
-  - Minimum cash out threshold
-  - Return tracking
-
-- Auto-login (and re-login) with error detection
-- Request lifetime history tracking
-- Detailed error reporting
-- Settings accessible through TOML file
-
+Basic programming knowledge is strongly recommended. This is not a plug-and-play solution.
 
 ## How to use it?
 
-Maverick is available upon request. Send an email to abel `(at)` jupiter `(dash)` labs `(dot)` tech.
+Maverick is available upon request:
+- Email: abel `(at)` jupiter `(dash)` labs `(dot)` tech
+- Telegram:  `(at)` abel `(underscore)` maverick.
 
-Plans are tailored to your use case, so make sure to include what you need in your email.
-
-You should be up and running in around 2-3 days since your first email.
-
-Although we provide [an example](https://github.com/t00ts/maverick-server), basic coding experience is recommended.
+You should be up and running in around 2-3 days since your first contact.
 
 <details>
   <summary>I need more markets, would you add them?</summary>
@@ -56,7 +23,7 @@ Although we provide [an example](https://github.com/t00ts/maverick-server), basi
 
 <details>
 <summary>What about other betting platforms?</summary>
-I'm happy to add other betting platforms upon request. Might incur in extra cost.
+We can add other betting platforms for those willing to sponsor their development.
 </details>
 
 <details>
@@ -87,20 +54,60 @@ Sure, everyone has a price.
 
 ----
 
+## Supported bet types
 
-## Configuration
+- [X] Single bets
+- [X] Multi-legged bets (a.k.a. "parlay" or "accumulator")
+
+
+## Supported markets
+
+- [X] Result
+- [X] Double chance
+- [X] Draw no bet
+- [X] Goal line
+- [X] Goals
+- [X] Asian handicap
+- [X] Score
+
+## Features
+
+- Hands-free bet placement on live matches
+  - Error detection on match, market, and bet levels
+  - Auto-retry capabilities:
+    - Participant suspended
+    - Accept odds changed
+    - Input quantity failure
+    - Click or selection failure
+  - Authentication QR code detection
+  - Authentication QR code solving
+
+- Hands-free bet closing for active bets
+  - Auto-retry on close suspended
+  - Minimum cash out threshold
+  - Return tracking
+
+- Auto-login (and re-login) with error detection
+- Request lifetime history tracking
+- Detailed error reporting
+- Bet queuing
+- Settings accessible through TOML file
+
+## How to use
+
+### 1. Configuration
 
 Maverick expects to find a `Config.toml` file in the same directory as the executable. The file is pretty self-explanatory, but here's what to expect from every category:
 
-| Category  | Description                                         |
-| --------- | --------------------------------------------------- |
-| Server    | Connection URL to the WebSocket (RF6455) server     |
-| Browser   | Canonical path to the Chrome browser executable     |
-| Platforms | Betting platform credentials (in plain text)        |
-| X         | If `post=true` X Developer credentials must be set  |
+| Category  | Description                                                                               |
+| --------- | ----------------------------------------------------------------------------------------- |
+| Server    | Connection URL to the WebSocket (RF6455) server that will send the commands to Maverick   |
+| Browser   | Canonical path to the Chrome browser executable                                           |
+| Platforms | Betting platform credentials (in plain text) and additional features to be enabled        |
+| X         | Developer credentials to post your bets on 𝕏                                              |
 
 
-### Server settings
+#### Server settings
 
 This is how the server settings should look:
 
@@ -116,7 +123,7 @@ max_retries = 10
 | max_retries | Max. nº of reconnection attempts before abort. |
 
 
-### Browser settings
+#### Browser settings
 
 This is how the browser settings should look:
 
@@ -135,16 +142,17 @@ window_size = [1500, 900]
 *_Window size and position settings may not as expected work on macOS._
 
 
-### Platform settings
+#### Platform settings
 
 This is how a platform configuration should look:
 
 ```toml
 [platforms.bet365]
-host = "www.bet365.es"
+host = "www.bet365.com"
 username = "theBetGod"
 password = "iLoveMe$$i!"
-language = "es"
+language = "en"
+features = []
 ```
 
 | Property | Description                              |
@@ -156,55 +164,68 @@ language = "es"
 | features | Additional features to be enabled        |
 
 
-## Running Mavierick
+### 2. Running Mavierick
 
-Maverick is contained in a single binary and can be excuted normally
+Maverick is contained in a single binary and can be excuted using the command line.
 
-### macOS
+**Note:** It is strongly recommended to run Maverick using a proper terminal/command line interface. Especially on Windows, the default console is known to cause issues when dealing with certain characters and colors.
+
+#### macOS
 ```bash
 $ ./maverick
 ```
 
-### Windows
+#### Windows
 ```bash
 maverick.exe
 ```
 
-## Interfacing with Maverick
-
 On startup, Maverick will automatically connect to the WebSocket server defined in the configuration file. On any disconnect, it will attempt to reconnect `max_retries` times. If a connection can't be established, Maverick will gracefully shut down.
+
+
+### 3. Interfacing with Maverick
+
+> 💡 We strongly encourage all new users to play around with the `betreq` CLI utility included in your Maverick bundle in order for you to understand how to specify your bets and get familiar with the API syntax.
+> 
+> On Windows: `betreq.exe`
+> 
+> On macOS/Linux: `./betreq`
+
 
 Maverick supports 3 commands from the upstream:
 
-| Command      | Description                           |
-| ------------ | ------------------------------------- |
-| SessionStart | Starts a new session.                 |
-| PlaceBet     | Attempts to place a bet               |
-| CloseBet     | Attempts to close an open/active bet  |
+| Command         | Description                           |
+| --------------- | ------------------------------------- |
+| `session_start` | Starts a new session.                 |
+| `place_bet`     | Attempts to place a bet               |
+| `close_bet`     | Attempts to close an open/active bet  |
 
 
-### SessionStart
+#### Session Start
 
-SessionStart will effectively start a new session. This means:
+`session_start` will effectively start a new session. This means:
 1. Dump full bet history for current session into a session log file.
 2. Clear bet history and start a new, fresh betting session.
 3. Reset equity for this session with current account balance.
 
 #### Example:
 ```json
-"SessionStart"
+"session_start"
 ```
 
-### PlaceBet
+#### Place Bet
 
-PlaceBet will attempt to place a bet in the given match. The main parameters here are:
+`place_bet` will attempt to place a bet in the given match. `place_bet` contains a `BetRequest` object,
+for which the main parameters are:
 
-- `id`: A UUID v4 that will uniquely identify this bet request.
+- `id`: A UUID that will uniquely identify this bet request on your system.
 - `host`: The root domain for the betting platform (platform `host` value from `Config.toml`)
-- `match`: The details to identify the live match.
-- `bet`: The actual market and participant we're betting on.
-- `odds`: The odds we are looking for.
-- `stake`: The amount of capital we want to deploy.
+- `bet`: The bet(s) to be placed, which contains:
+  - `match`: The details to identify the live match _(see below for more details)_.
+  - `market`: The actual market and participant we're betting on _(see below for more details)_.
+  - `odds`: The odds we are looking for _(see below for more details)_.
+  - `tf`: The time frame for the bet _(e.g. `FirstHalf`, `SecondHalf`, `FullTime`)_.
+  - `stake`: The amount of capital we want to deploy _(between 0 and 1)_.
 
 #### Identifying a match
 
@@ -212,138 +233,157 @@ There's currently two ways of specifying a match:
 
 ##### Using the platform url:
 ```json
-{
-  "Url": "https://www.bet365.es/#/IP/EV15970168472C1"
-}
+"match": "https://www.bet365.com/#/IP/EV00000012345678"
 ```
 
 ##### Using the team names:
 ```json
-{
-  "Teams": ["Roma", "Lazio"]
-}
+"match": ["Roma", "Lazio"]
 ```
 
+> _Note: Combined bets only support url-identified matches._
 
 #### Bets
 
-For every supported market, there are multiple ways of specifying the participant:
+Some examples of actual bets:
 
-#### Result
+##### Result
 
-##### Using participant index:
 ```json
-{
-  "Result":{
-    "Index": 2
-  }
+"bet": {
+  "market": {
+    "result": "Ajax FC"   // Uses name to specify participant
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 3.2
+  },
+  "tf": "FullTime"
 }
 ```
 
-##### Using participant name:
+##### Double Chance
+
 ```json
-{
-  "Result":{
-    "Name": "FC Andorra"
-  }
+"bet": {
+  "market": {
+    "double_chance": 1  // Uses index to specify participant
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 2.1
+  },
+  "tf": "FullTime"
 }
 ```
 
-#### Double Chance
+##### Draw No Bet
 
-##### Using participant index:
 ```json
-{
-  "DoubleChance":{
-    "Index": 0
-  }
+"bet": {
+  "market": {
+    "draw_no_bet": "Sevilla"
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 1.8
+  },
+  "tf": "FullTime"
 }
 ```
 
-##### Using participant name:
+##### Goal Line (single)
+
 ```json
-{
-  "DoubleChance":{
-    "Name": "Oviedo o Empate"
-  }
-}
-```
-
-#### Draw No Bet
-
-##### Using participant index:
-```json
-{
-  "DrawNoBet":{
-    "Index": 0
-  }
-}
-```
-
-##### Using participant name:
-```json
-{
-  "DrawNoBet":{
-    "Name": "Sevilla"
-  }
-}
-```
-
-#### Goal Line
-
-##### Over:
-```json
-{
-  "GoalLine":{
-    "score": [1,0],
-    "goals":{
-      "Over": [1.5]
+"bet": {
+  "market": {
+    "goal_line": {
+      "over": [3.0],
+      "score": [1, 2]
     }
-  }
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 3.45
+  },
+  "tf": "FirstHalf"
 }
 ```
 
-##### Under:
+##### Goal Line (split)
+
 ```json
-{
-  "GoalLine":{
-    "score": [0,0],
-    "goals":{
-      "Under": [0.5,1.0]
+"bet": {
+  "market": {
+    "goal_line": {
+      "score": [0,1],
+      "under": [2.0, 2.5]
     }
-  }
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 2.5
+  },
+  "tf": "FullTime"
 }
 ```
 
-#### Asian Handicap
+##### Goals
 
-##### Using participant index and single hcp:
 ```json
-{
-  "AsianHcp":{
-    "participant":{
-      "Index":0
-    },
-    "score":[1,0],
-    "line":[1.5]
-  }
+"bet": {
+  "market": {
+    "goals": {
+      "over": 4.0
+    }
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 2.83
+  },
+  "tf": "FirstHalf"
 }
 ```
 
-##### Using participant name and spread hcp:
+##### Asian Handicap (single line)
+
 ```json
-{
-  "AsianHcp":{
-    "participant":{
-      "Name":"Roma"
-    },
-    "score":[1,0],
-    "line":[-0.5, -1]
-  }
+"bet": {
+  "market": {
+    "asian_hcp": {
+      "line": [1.5],
+      "score": [0, 2],
+      "team": "Manchester City"
+    }
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 4.15
+  },
+  "tf": "FullTime"
 }
 ```
 
-##### Catching fast-changing handicaps
+##### Asian Handicap (spread)
+
+```json
+"bet": {
+  "market": {
+    "asian_hcp": {
+      "line": [-0.5, -1],
+      "score": [0, 0],
+      "team": "Udinese FC"
+    }
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 2.5
+  },
+  "tf": "FullTime"
+}
+```
+
+###### Catching fast-changing handicaps
 
 You can specify a tolerance factor for fast-changing handicaps. In the following example, all line values have a ±0.25 tolerance factor, which you can adapt to your needs.
 
@@ -355,50 +395,72 @@ You can specify a tolerance factor for fast-changing handicaps. In the following
 "line":[[0.0, 0.5],0.25]
 ```
 
-#### Goals
+##### Score
 
-##### Over:
+Score is always a 2-element array, where the first element is the home team score and the second is the away team score.
+
 ```json
-{
-  "Goals":{
-    "Over": 1.5
-  }
+"bet": {
+  "market": {
+    "score": [3, 4]
+  },
+  "match": "https://www.bet365.com/#/IP/EV00000012345678",
+  "odds": {
+    "base": 11.5
+  },
+  "tf": "FirstHalf"
 }
 ```
 
-##### Under:
-```json
-{
-  "Goals":{
-    "Under": 4.5
-  }
-}
-```
 
-#### Full Example: A complete bet request
+#### Full Example: A complete multi-legged bet request
 ```json
 {
-  "PlaceBet":{
-    "id": "60f293c2-3ce1-49fb-a309-1c75520fc1d2",
-    "host": "www.bet365.es",
-    "match":{
-      "Url": "https://www.bet365.es/#/IP/EV15970168472C1"
-    },
-    "bet":{
-      "Goals":{
-        "Over": 1.5
+  "place_bet": {
+    "bet": [
+      {
+        "market": {
+          "result": "Leicester City"
+        },
+        "match": "https://www.bet365.com/#/IP/EV00000012345678",
+        "odds": {
+          "base": 15.3,
+          "tolerance": 0.1
+        },
+        "tf": "FullTime"
+      },
+      {
+        "market": {
+          "goals": {
+            "over": 3.0
+          }
+        },
+        "match": "https://www.bet365.com/#/IP/EV00000012345678",
+        "odds": {
+          "base": 4.1,
+          "tolerance": 0.1
+        },
+        "tf": "FirstHalf"
+      },
+      {
+        "market": {
+          "score": [2, 1]
+        },
+        "match": "https://www.bet365.com/#/IP/EV00000012345678",
+        "odds": {
+          "base": 3.85
+        },
+        "tf": "FullTime"
       }
-    },
-    "odds": {
-      "base": 1.6,
-    },
-    "stake": 0.05,
-    "tf": "FirstHalf"
+    ],
+    "host": "www.bet365.com",
+    "id": "7e81d4da-3440-44d8-ad29-edc84fb73157",
+    "stake": 0.05
   }
 }
 ```
 
-### Odds
+#### Odds
 
 The odds have a default threshold of ±10% from the `base` value. Optionally, this threshold can be adjusted by adding the `tolerance` parameter as shown below:
 
@@ -433,9 +495,9 @@ CloseBet will attempt to close an open/active bet. The request is pretty straigh
 #### Example:
 ```json
 {
-  "CloseBet":{
-    "bet_req_id":"dfc28c57-1ee8-478f-b863-0dd665049570",
-    "min_cashout":1.60
+  "close_bet": {
+    "bet_req_id": "7e81d4da-3440-44d8-ad29-edc84fb73157",
+    "min_cashout": 1.6
   }
 }
 ```
@@ -457,7 +519,7 @@ Here's an example:
 {
   "date":1702985129669,
   "start_balance":{
-    "bet365.es": 995.24,
+    "bet365.com": 995.24,
     "bwin.es": 52.98
   }
 }
@@ -471,48 +533,130 @@ Here's a complete example of what it might look like:
 
 ```json
 {
-  "id":"9b6aa621-e23f-4063-a1c7-f5144e954cd3",
-  "host":"www.bet365.es",
-  "match":{
-    "Url":"https://www.bet365.es/#/IP/EV151069422752C1"
-  },
-  "bet":{
-    "Goals":{
-      "Under":5.5
+  "id":"0dd700b3-0a9c-452e-b3f6-c0228f9492aa",
+  "host":"www.bet365.com",
+  "bet":[
+    {
+      "match":{
+        "Url":"https://www.bet365.com/#/AC/B1/C1/D8/E161801311/F3/"
+      },
+      "market":{
+        "Goals":{
+          "Over":2.5
+        }
+      },
+      "odds":{
+        "base":1.66,
+        "tolerance":0.1
+      },
+      "tf":"FullTime"
+    },
+    {
+      "match":{
+        "Url":"https://www.bet365.com/#/AC/B1/C1/D8/E161190320/F3/"
+      },
+      "market":{
+        "Score":[1, 2]
+      },
+      "odds":{
+        "base":23.0,
+        "tolerance":0.1
+      },
+      "tf":"FullTime"
+    },
+    {
+      "match":{
+        "Url":"https://www.bet365.com/#/AC/B1/C1/D8/E161190309/F3/I1/"
+      },
+      "market":{
+        "Score":[3, 2]
+      },
+      "odds":{
+        "base":34.0,
+        "tolerance":0.1
+      },
+      "tf":"FullTime"
+    },
+    {
+      "match":{
+        "Url":"https://www.bet365.com/#/AC/B1/C1/D8/E161190315/F3/"
+      },
+      "market":{
+        "Score":[2, 2]
+      },
+      "odds":{
+        "base":40.0,
+        "tolerance":0.1
+      },
+      "tf":"FirstHalf"
+    },
+    {
+      "match":{
+        "Url":"https://www.bet365.com/#/AC/B1/C1/D8/E161190989/F3/"
+      },
+      "market":{
+        "Score":[0, 0]
+      },
+      "odds":{
+        "base":2.6,
+        "tolerance":0.1
+      },
+      "tf":"FirstHalf"
     }
-  },
-  "odds":{
-    "base":1.33,
-    "tolerance":0.1
-  },
-  "tf":"FullTime",
+  ],
   "stake":0.05,
-  "amt":47,
+  "amt":4.78,
   "hist":[
     {
-      "timestamp":1722338306681,
+      "timestamp":1727283011713,
       "status":"Received"
     },
     {
-      "timestamp":1722338308873,
+      "timestamp":1727283012883,
       "status":"Ready"
     },
     {
-      "timestamp":1722338313351,
-      "status":"QRAuthRequested"
+      "timestamp":1727283016891,
+      "status":{
+        "Loaded":"https://www.bet365.com/#/AC/B1/C1/D8/E161801311/F3/"
+      }
     },
     {
-      "timestamp":1722338324490,
+      "timestamp":1727283023366,
       "status":{
-        "Placed":{
-          "ref":"BF7709201861A",
-          "amt":47,
-          "odds":1.33,
-          "acct_balance":940.75
+        "Loaded":"https://www.bet365.com/#/AC/B1/C1/D8/E161190320/F3/"
+      }
+    },
+    {
+      "timestamp":1727283030439,
+      "status":{
+        "Loaded":"https://www.bet365.com/#/AC/B1/C1/D8/E161190309/F3/I1/"
+      }
+    },
+    {
+      "timestamp":1727283031093,
+      "status":{
+        "Error":{
+          "OddsChanged":41.0
         }
       }
     }
   ]
+}
+```
+
+When the bet is actually placed, the last status update will look like this:
+```json
+{
+  "timestamp":1727176294823,
+  "status":{
+    "Placed":{
+      "ref":"BF7709201861A",
+      "amt":4.94,
+      "odds":123.45,
+      "acct_balance":94.30
+    }
+  }
 }
 ```
 
@@ -526,6 +670,7 @@ The following is a comprehensive list of all errors that can occur while executi
 | OddsChanged(f32)            | Odds changed and are out of the specified tolerance factor |
 | NotLoggedIn                 | User is not logged in                                      |
 | MatchNotFound               | Match not found (probably finished)                        |
+| MatchSuspended              | Match was suspended at the time of attempting the bet      |
 | MarketNotSupported          | Market is not supported                                    |
 | MarketNotAvailable          | Market was not available at the time of attempting the bet |
 | ParticipantNotFound         | Participant was not found                                  |
@@ -539,6 +684,7 @@ The following is a comprehensive list of all errors that can occur while executi
 | AuthQRCodeRequested(String) | Platform requested QR authentication by a user             |
 | QRSolverService(String)     | Errors originated from the QR Solver service               |
 | PlatformErrorMsg(String)    | Platform error message appeared when placing a bet         |
+| License(String)             | License error (includes details as a String)               |
 | Other(String)               | Other errors (includes details as a String)                |
 | Unknown                     | Unknown error                                              |
 
