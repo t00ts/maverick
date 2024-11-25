@@ -11,7 +11,7 @@ Basic programming knowledge is strongly recommended. This is not a plug-and-play
 ## How to use it?
 
 Maverick is available upon request:
-- Email: abel `(at)` jupiter `(dash)` labs `(dot)` tech
+- Email: abel `(at)` akila `(dot)` tech
 - Telegram:  `(at)` abel `(underscore)` maverick.
 
 You should be up and running in around 2-3 days since your first contact.
@@ -223,9 +223,9 @@ for which the main parameters are:
 - `bet`: The bet(s) to be placed, which contains:
   - `match`: The details to identify the live match _(see below for more details)_.
   - `market`: The actual market and participant we're betting on _(see below for more details)_.
-  - `odds`: The odds we are looking for _(see below for more details)_.
+  - `odds`: The minimum odds we are looking for to place the bet.
   - `tf`: The time frame for the bet _(e.g. `FirstHalf`, `SecondHalf`, `FullTime`)_.
-  - `stake`: The amount of capital we want to deploy _(between 0 and 1)_.
+  - `stake`: The amount of capital to be deployed on this bet.
 
 #### Identifying a match
 
@@ -255,9 +255,7 @@ Some examples of actual bets:
     "result": "Ajax FC"   // Uses name to specify participant
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 3.2
-  },
+  "odds": 3.2,
   "tf": "FullTime"
 }
 ```
@@ -270,9 +268,7 @@ Some examples of actual bets:
     "double_chance": 1  // Uses index to specify participant
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 2.1
-  },
+  "odds": 2.1,
   "tf": "FullTime"
 }
 ```
@@ -285,9 +281,7 @@ Some examples of actual bets:
     "draw_no_bet": "Sevilla"
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 1.8
-  },
+  "odds": 1.8,
   "tf": "FullTime"
 }
 ```
@@ -303,9 +297,7 @@ Some examples of actual bets:
     }
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 3.45
-  },
+  "odds": 3.45,
   "tf": "FirstHalf"
 }
 ```
@@ -321,9 +313,7 @@ Some examples of actual bets:
     }
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 2.5
-  },
+  "odds": 2.5,
   "tf": "FullTime"
 }
 ```
@@ -338,9 +328,7 @@ Some examples of actual bets:
     }
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 2.83
-  },
+  "odds": 2.83,
   "tf": "FirstHalf"
 }
 ```
@@ -357,9 +345,7 @@ Some examples of actual bets:
     }
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 4.15
-  },
+  "odds": 4.15,
   "tf": "FullTime"
 }
 ```
@@ -376,9 +362,7 @@ Some examples of actual bets:
     }
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 2.5
-  },
+  "odds": 2.5,
   "tf": "FullTime"
 }
 ```
@@ -405,9 +389,7 @@ Score is always a 2-element array, where the first element is the home team scor
     "score": [3, 4]
   },
   "match": "https://www.bet365.com/#/IP/EV00000012345678",
-  "odds": {
-    "base": 11.5
-  },
+  "odds": 11.5,
   "tf": "FirstHalf"
 }
 ```
@@ -423,10 +405,7 @@ Score is always a 2-element array, where the first element is the home team scor
           "result": "Leicester City"
         },
         "match": "https://www.bet365.com/#/IP/EV00000012345678",
-        "odds": {
-          "base": 15.3,
-          "tolerance": 0.1
-        },
+        "odds": 15.3,
         "tf": "FullTime"
       },
       {
@@ -436,10 +415,7 @@ Score is always a 2-element array, where the first element is the home team scor
           }
         },
         "match": "https://www.bet365.com/#/IP/EV00000012345678",
-        "odds": {
-          "base": 4.1,
-          "tolerance": 0.1
-        },
+        "odds": 4.1,
         "tf": "FirstHalf"
       },
       {
@@ -447,43 +423,25 @@ Score is always a 2-element array, where the first element is the home team scor
           "score": [2, 1]
         },
         "match": "https://www.bet365.com/#/IP/EV00000012345678",
-        "odds": {
-          "base": 3.85
-        },
+        "odds": 3.85,
         "tf": "FullTime"
       }
     ],
     "host": "www.bet365.com",
     "id": "7e81d4da-3440-44d8-ad29-edc84fb73157",
-    "stake": 0.05
+    "stake": 25
   }
 }
 ```
 
 #### Odds
 
-The odds have a default threshold of ±10% from the `base` value. Optionally, this threshold can be adjusted by adding the `tolerance` parameter as shown below:
+The minimum odds required to place the bet are set in `odds`. If the platform offers anything above, the bet will be placed.
 
-```json
-{
-  "base": 1.4,
-  "tolerance": 0.25
-}
-```
-
-The `tolerance` value is normalized, so only values in the range `0..1` should be used. In the example, `0.25` would allow for a 25% deviation to either side from the base `1.4` value, so effectively the bet would be placed if the actual value offered by the platform is within the range `1.05..1.75`.
 
 ### Stake
 
-The nominal cash amount of the bet is effectively derived from the `stake` value, which again should always be in the range `0..1`.
-
-Assuming `B` is the session starting balance, the bet amount will be calculated as follows:
-
-```
-Bet Amount = B × stake
-```
-
-So, as an example, if the session starting balance `B` is 100€ and the `stake` for a given bet request is `0.05`, Maverick will attempt to place the bet using 5€ of capital.
+The nominal cash amount to use for the bet, in the account currency.
 
 
 ### CloseBet
@@ -545,10 +503,7 @@ Here's a complete example of what it might look like:
           "Over":2.5
         }
       },
-      "odds":{
-        "base":1.66,
-        "tolerance":0.1
-      },
+      "odds":1.66,,
       "tf":"FullTime"
     },
     {
@@ -558,10 +513,7 @@ Here's a complete example of what it might look like:
       "market":{
         "Score":[1, 2]
       },
-      "odds":{
-        "base":23.0,
-        "tolerance":0.1
-      },
+      "odds":23.0,
       "tf":"FullTime"
     },
     {
@@ -571,10 +523,7 @@ Here's a complete example of what it might look like:
       "market":{
         "Score":[3, 2]
       },
-      "odds":{
-        "base":34.0,
-        "tolerance":0.1
-      },
+      "odds":34.0,
       "tf":"FullTime"
     },
     {
@@ -584,10 +533,7 @@ Here's a complete example of what it might look like:
       "market":{
         "Score":[2, 2]
       },
-      "odds":{
-        "base":40.0,
-        "tolerance":0.1
-      },
+      "odds":40.0,
       "tf":"FirstHalf"
     },
     {
@@ -597,15 +543,11 @@ Here's a complete example of what it might look like:
       "market":{
         "Score":[0, 0]
       },
-      "odds":{
-        "base":2.6,
-        "tolerance":0.1
-      },
+      "odds":2.6,
       "tf":"FirstHalf"
     }
   ],
-  "stake":0.05,
-  "amt":4.78,
+  "stake":5,
   "hist":[
     {
       "timestamp":1727283011713,
@@ -652,7 +594,7 @@ When the bet is actually placed, the last status update will look like this:
   "status":{
     "Placed":{
       "ref":"BF7709201861A",
-      "amt":4.94,
+      "amt":5.0,
       "odds":123.45,
       "acct_balance":94.30
     }
